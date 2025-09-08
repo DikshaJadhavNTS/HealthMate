@@ -8,14 +8,13 @@ from email_validator import validate_email, EmailNotValidError
 from datetime import datetime
 import secrets
 import mysql.connector
-
+from models import db, Patient
 # ---------- AUTO CREATE DATABASE ----------
 DB_NAME = "patient_db"
 MYSQL_USER = "root"         
 MYSQL_PASSWORD = "root"        
 MYSQL_HOST = "127.0.0.1"
 
-# connect without DB first
 conn = mysql.connector.connect(
     host=MYSQL_HOST,
     user=MYSQL_USER,
@@ -159,7 +158,25 @@ def login():
 def logout():
     logout_user()
     return jsonify({"msg": "Logged out successfully"}), 200
+from flask import jsonify
 
+@app.route("/getallpatients", methods=["GET"])
+def get_all_patients():
+    try:
+        patients = Patient.query.all()
+        return jsonify([patient.to_dict() for patient in patients]), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/patient/<int:patient_id>", methods=["GET"])
+def get_patient(patient_id):
+    try:
+        patient = Patient.query.get(patient_id)
+        if not patient:
+            return jsonify({"error": "Patient not found"}), 404
+        return jsonify(patient.to_dict()), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/profile", methods=["GET"])
 @login_required

@@ -1,0 +1,21 @@
+{
+  "Common Cold": ["General Physician", "ENT Specialist"],
+  "Acne": ["Dermatologist", "General Physician"],
+  "Acute pancreatitis": ["Gastroenterologist", "General Physician"],
+  "Asthma": ["Pulmonologist", "General Physician"],
+  "Alzheimer’s disease": ["Neurologist", "General Physician"],
+  "Angina": ["Cardiologist", "General Physician"],
+  "Anxiety disorders in children": ["Psychiatrist", "Psychologist", "General Physician"],
+  "Appendicitis": ["General Surgeon", "General Physician"],
+  "Arthritis": ["Rheumatologist", "Orthopedic Specialist", "General Physician"],
+  "Bowel cancer": ["Oncologist", "Gastroenterologist", "General Physician"],
+  "Breast cancer (female)": ["Oncologist", "General Physician"],
+  "Bronchitis": ["Pulmonologist", "General Physician"],
+  "Chickenpox": ["Pediatrician", "General Physician"],
+  "Diabetes": ["Endocrinologist", "General Physician"],
+  "Hypertension (high blood pressure)": ["Cardiologist", "General Physician"],
+  "Migraine": ["Neurologist", "General Physician"],
+  "Thyroid Disorder": ["Endocrinologist", "General Physician"],
+  "Tuberculosis (TB)": ["Pulmonologist", "Infectious Disease Specialist", "General Physician"],
+  "Urinary tract infection (UTI)": ["Urologist", "General Physician"]
+}

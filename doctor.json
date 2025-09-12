@@ -1,0 +1,58 @@
+[
+  {
+    "name": "Dr. Amit Sharma",
+    "qualification": "MBBS, MD",
+    "specialization": ["Cardiologist"],
+    "contact": "+91-9876543210",
+    "image": "https://img.freepik.com/free-photo/portrait-male-health-worker_23-2148980804.jpg"
+  },
+  {
+    "name": "Dr. Priya Verma",
+    "qualification": "MBBS, MS (ENT)",
+    "specialization": ["ENT Specialist"],
+    "contact": "+91-9123456789",
+    "image": "https://img.freepik.com/free-photo/female-doctor-hospital-with-stethoscope_23-2148827774.jpg?semt=ais_hybrid&w=740&q=80"
+  },
+  {
+    "name": "Dr. Rajesh Gupta",
+    "qualification": "MBBS",
+    "specialization": ["General Physician"],
+    "contact": "+91-9988776655",
+    "image": "https://t4.ftcdn.net/jpg/03/20/52/31/360_F_320523164_tx7Rdd7I2XDTvvKfz2oRuRpKOPE5z0ni.jpg"
+  },
+  {
+    "name": "Dr. Neha Kapoor",
+    "qualification": "MBBS, MD (Endocrinology)",
+    "specialization": ["Endocrinologist"],
+    "contact": "+91-9112233445",
+    "image": "https://img.freepik.com/free-photo/beautiful-young-female-doctor-looking-camera-office_1301-7807.jpg?semt=ais_hybrid&w=740&q=80"
+  },
+  {
+    "name": "Dr. Arjun Mehta",
+    "qualification": "MBBS, MD (Pulmonology)",
+    "specialization": ["Pulmonologist"],
+    "contact": "+91-9876501234",
+    "image": "https://www.shutterstock.com/image-photo/portrait-handsome-male-doctor-stethoscope-600nw-2480850611.jpg"
+  },
+  {
+    "name": "Dr. Kavita Nair",
+    "qualification": "MBBS, MD (Dermatology)",
+    "specialization": ["Dermatologist"],
+    "contact": "+91-9123456000",
+    "image": "https://images.theconversation.com/files/304957/original/file-20191203-66986-im7o5.jpg?ixlib=rb-4.1.0&q=45&auto=format&w=926&fit=clip"
+  },
+  {
+    "name": "Dr. Sanjay Rao",
+    "qualification": "MBBS, MS (General Surgery)",
+    "specialization": ["General Surgeon"],
+    "contact": "+91-9998887776",
+    "image": "https://www.shutterstock.com/image-photo/portrait-handsome-male-doctor-stethoscope-600nw-2480850611.jpg"
+  },
+  {
+    "name": "Dr. Anjali Deshmukh",
+    "qualification": "MBBS, MD (Psychiatry)",
+    "specialization": ["Psychiatrist"],
+    "contact": "+91-9001122334",
+    "image": "https://img.freepik.com/free-photo/beautiful-young-female-doctor-looking-camera-office_1301-7807.jpg?semt=ais_hybrid&w=740&q=80"
+  }
+]

@@ -6,3 +6,5 @@ Flask-Cors==4.0.1
 Flask-Login==0.6.3
 Werkzeug==2.3.6
 email-validator==2.0.0
+rapidfuzz
+openai

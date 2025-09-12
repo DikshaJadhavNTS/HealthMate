@@ -1,0 +1,50 @@
+{
+  "Common Cold": {
+    "symptoms": ["runny nose", "sneezing", "sore throat", "mild fever"],
+    "medications": [
+      {
+        "name": "Paracetamol",
+        "dosage": "500mg every 6–8 hours if fever > 100°F",
+        "duration": "2–3 days"
+      },
+      {
+        "name": "Cetirizine",
+        "dosage": "10mg once daily (preferably at night)",
+        "duration": "5 days"
+      }
+    ],
+    "causes": "Viral infection, usually rhinovirus; spreads via droplets and close contact."
+  },
+  "Flu": {
+    "symptoms": ["high fever", "body ache", "headache", "chills", "fatigue"],
+    "medications": [
+      {
+        "name": "Paracetamol",
+        "dosage": "500mg every 6–8 hours for fever and pain",
+        "duration": "3–5 days"
+      },
+      {
+        "name": "Oseltamivir",
+        "dosage": "75mg twice daily",
+        "duration": "5 days"
+      }
+    ],
+    "causes": "Influenza virus infection; spreads quickly through droplets, coughs, sneezes."
+  },
+  "Allergic Rhinitis": {
+    "symptoms": ["sneezing", "runny nose", "itchy eyes", "nasal congestion"],
+    "medications": [
+      {
+        "name": "Cetirizine",
+        "dosage": "10mg once daily",
+        "duration": "7 days"
+      },
+      {
+        "name": "Fluticasone Nasal Spray",
+        "dosage": "1 spray in each nostril daily",
+        "duration": "7–10 days"
+      }
+    ],
+    "causes": "Allergic reaction to pollen, dust, pet dander, or other environmental triggers."
+  }
+}

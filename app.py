@@ -8,7 +8,9 @@ from email_validator import validate_email, EmailNotValidError
 from datetime import datetime
 import secrets
 import mysql.connector
+from chatbot import ConversationManager
 from models import db, Patient
+
 # ---------- AUTO CREATE DATABASE ----------
 DB_NAME = "patient_db"
 MYSQL_USER = "root"         
@@ -27,6 +29,7 @@ conn.close()
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(32) 
+conv_manager = ConversationManager()
 
 app.config["SQLALCHEMY_DATABASE_URI"] = (
     f"mysql+mysqlconnector://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}/{DB_NAME}"
@@ -183,8 +186,20 @@ def get_patient(patient_id):
 def profile():
     return jsonify({"patient": current_user.to_dict()}), 200
 
+@app.route("/chatbot", methods=["POST"])
+def chatbot_api():
+    data = request.get_json()
+    user_text = data.get("message", "").strip()
+
+    if not user_text:
+        return jsonify({"error": "Message cannot be empty"}), 400
+
+    # Use only ConversationManager for multi-turn flow
+    response = conv_manager.process(user_text)
+
+    return jsonify(response)
 
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()  
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=True)

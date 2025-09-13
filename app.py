@@ -9,6 +9,7 @@ from datetime import datetime
 import secrets
 import mysql.connector
 from chatbot import ConversationManager
+from doctor_chatbot import DoctorConversationManager
 from models import db, Patient
 
 # ---------- AUTO CREATE DATABASE ----------
@@ -29,7 +30,10 @@ conn.close()
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(32) 
-conv_manager = ConversationManager()
+
+# Dictionary to store conversation managers per user session
+conversation_managers = {}
+doctor_conversation_managers = {}
 
 app.config["SQLALCHEMY_DATABASE_URI"] = (
     f"mysql+mysqlconnector://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}/{DB_NAME}"
@@ -194,10 +198,122 @@ def chatbot_api():
     if not user_text:
         return jsonify({"error": "Message cannot be empty"}), 400
 
-    # Use only ConversationManager for multi-turn flow
+    # Get or create conversation manager for this user session
+    session_id = request.headers.get('X-Session-ID', 'default')
+    if session_id not in conversation_managers:
+        conversation_managers[session_id] = ConversationManager()
+    
+    conv_manager = conversation_managers[session_id]
+    
+    # Process the message
     response = conv_manager.process(user_text)
+    
+    # If conversation ended, clean up the session
+    if response.get("conversation_ended"):
+        if session_id in conversation_managers:
+            del conversation_managers[session_id]
 
     return jsonify(response)
+
+@app.route("/chatbot/status", methods=["GET"])
+def chatbot_status():
+    """Get the current conversation status"""
+    session_id = request.headers.get('X-Session-ID', 'default')
+    
+    if session_id in conversation_managers:
+        conv_manager = conversation_managers[session_id]
+        return jsonify({
+            "active": conv_manager.conversation_active,
+            "stage": conv_manager.stage,
+            "has_symptoms": bool(conv_manager.symptoms)
+        })
+    else:
+        return jsonify({
+            "active": False,
+            "stage": "greeting",
+            "has_symptoms": False
+        })
+
+@app.route("/chatbot/reset", methods=["POST"])
+def chatbot_reset():
+    """Reset the conversation for the current session"""
+    session_id = request.headers.get('X-Session-ID', 'default')
+    
+    if session_id in conversation_managers:
+        conversation_managers[session_id].reset_conversation()
+        return jsonify({"message": "Conversation reset successfully"})
+    else:
+        return jsonify({"message": "No active conversation to reset"})
+
+# ---- Doctor Chatbot Routes ----
+@app.route("/doctor-chatbot", methods=["POST"])
+def doctor_chatbot_api():
+    """Doctor chatbot API endpoint"""
+    data = request.get_json()
+    user_text = data.get("message", "").strip()
+
+    if not user_text:
+        return jsonify({"error": "Message cannot be empty"}), 400
+
+    # Get or create doctor conversation manager for this session
+    session_id = request.headers.get('X-Session-ID', 'default')
+    if session_id not in doctor_conversation_managers:
+        doctor_conversation_managers[session_id] = DoctorConversationManager()
+    
+    doctor_conv_manager = doctor_conversation_managers[session_id]
+    
+    # Process the message
+    response = doctor_conv_manager.process(user_text)
+    
+    # If conversation ended, clean up the session
+    if response.get("conversation_ended"):
+        if session_id in doctor_conversation_managers:
+            del doctor_conversation_managers[session_id]
+
+    return jsonify(response)
+
+@app.route("/doctor-chatbot/status", methods=["GET"])
+def doctor_chatbot_status():
+    """Get the current doctor conversation status"""
+    session_id = request.headers.get('X-Session-ID', 'default')
+    
+    if session_id in doctor_conversation_managers:
+        doctor_conv_manager = doctor_conversation_managers[session_id]
+        return jsonify({
+            "active": doctor_conv_manager.conversation_active,
+            "stage": doctor_conv_manager.stage,
+            "has_patient_info": bool(doctor_conv_manager.patient_info),
+            "has_symptoms": bool(doctor_conv_manager.symptoms)
+        })
+    else:
+        return jsonify({
+            "active": False,
+            "stage": "greeting",
+            "has_patient_info": False,
+            "has_symptoms": False
+        })
+
+@app.route("/doctor-chatbot/reset", methods=["POST"])
+def doctor_chatbot_reset():
+    """Reset the doctor conversation for the current session"""
+    session_id = request.headers.get('X-Session-ID', 'default')
+    
+    if session_id in doctor_conversation_managers:
+        doctor_conversation_managers[session_id].reset_conversation()
+        return jsonify({"message": "Doctor consultation reset successfully"})
+    else:
+        return jsonify({"message": "No active doctor consultation to reset"})
+
+@app.route("/prescription/download/<prescription_id>", methods=["GET"])
+def download_prescription(prescription_id):
+    """Download prescription as PDF (placeholder for now)"""
+    # This would generate and return a PDF prescription
+    # For now, return the prescription data as JSON
+    return jsonify({
+        "message": "Prescription download functionality will be implemented",
+        "prescription_id": prescription_id,
+        "note": "This endpoint will generate a downloadable PDF prescription"
+    })
 
 if __name__ == "__main__":
     with app.app_context():

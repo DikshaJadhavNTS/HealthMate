@@ -143,26 +143,85 @@ def generate_plaintext_response(symptoms_text: str,
 # ---- Conversation Manager ----
 class ConversationManager:
     def __init__(self):
+        self.reset_conversation()
+
+    def reset_conversation(self):
+        """Reset the conversation to start fresh"""
         self.stage = "greeting"
         self.symptoms = ""
         self.duration = ""
         self.other_symptoms = ""
         self.allergies = ""
         self.matched_conditions = []
+        self.conversation_active = True
 
     def _choose(self, options):
         return random.choice(options)
 
+    def _is_exit_command(self, text: str) -> bool:
+        """Check if user wants to exit/stop the conversation"""
+        exit_words = ["exit", "quit", "stop", "bye", "goodbye", "end", "close"]
+        return text in exit_words
+
+    def _is_restart_command(self, text: str) -> bool:
+        """Check if user wants to restart/start new conversation"""
+        restart_words = ["restart", "new", "start over", "begin again", "reset"]
+        return text in restart_words
+
+    def _is_help_command(self, text: str) -> bool:
+        """Check if user wants help"""
+        help_words = ["help", "commands", "what can you do", "options"]
+        return text in help_words
+
+    def _get_help_message(self) -> str:
+        """Return help message with available commands"""
+        return """ **HealthMate Commands:**
+        
+**Conversation Commands:**
+- `help` - Show this help message
+- `restart` or `new` - Start a new conversation
+- `exit`, `quit`, or `stop` - End the conversation
+
+**How to use HealthMate:**
+1. Tell me your symptoms
+2. I'll ask about duration and other details
+3. Get personalized health advice and medication suggestions
+4. Optionally get doctor recommendations
+
+**Example:** "I have a headache" or "I'm feeling feverish"
+
+Type your symptoms to get started! """
+
     def process(self, user_text: str) -> Dict[str, Any]:
         user_text = user_text.strip().lower()
+
+        # Check for special commands first
+        if self._is_help_command(user_text):
+            return {"reply_text": self._get_help_message()}
+        
+        if self._is_exit_command(user_text):
+            self.conversation_active = False
+            return {"reply_text": self._choose([
+                "Thank you for using HealthMate! Take care and stay healthy! 👋",
+                "Goodbye! Remember to consult a doctor if symptoms persist. Stay well! 👋",
+                "Take care! HealthMate is always here when you need help. 👋"
+            ]), "conversation_ended": True}
+        
+        if self._is_restart_command(user_text):
+            self.reset_conversation()
+            return {"reply_text": self._choose([
+                " Starting fresh! Hello! I'm HealthMate. How are you feeling today?",
+                " New conversation started! Hi there, I'm HealthMate. Tell me what symptoms are bothering you.",
+                " Ready for a new consultation! Hey! I'm here to help. Could you share your symptoms with me?"
+            ])}
 
         # Stage 1: greeting
         if self.stage == "greeting":
             self.stage = "ask_symptoms"
             return {"reply_text": self._choose([
                 "Hello! I'm HealthMate. How are you feeling today?",
-                "Hi there, I’m HealthMate. Tell me what symptoms are bothering you.",
-                "Hey! I’m here to help. Could you share your symptoms with me?"
+                "Hi there, I'm HealthMate. Tell me what symptoms are bothering you.",
+                "Hey! I'm here to help. Could you share your symptoms with me?"
             ])}
 
         # Stage 2: symptoms
@@ -240,28 +299,37 @@ class ConversationManager:
             if user_text in ["yes", "y"]:
                 docs = match_doctors_by_condition(self.matched_conditions)
                 if not docs:
-                    return {"reply_text": "Sorry, I couldn’t find doctors for your case right now."}
+                    return {"reply_text": "Sorry, I couldn't find doctors for your case right now."}
 
-                lines = ["Doctor Recommendation Based on symptoms:"]
-                for i, doc in enumerate(docs, 1):
-                    lines.append(
-                        f"{i}. {doc['name']} ({doc['qualification']}) – {', '.join(doc['specialization'])}\n"
-                        f"   Contact: {doc['contact']}\n"
-                        f"   Image: {doc.get('image', 'No image available')}"
-                    )
-                return {"reply_text": "\n".join(lines), "structured": {"doctors": docs}}
+                # Don't include doctor details in reply_text - let frontend handle display
+                reply_text = "I found some doctors who specialize in your condition. The recommendations are being displayed in a separate window for your convenience.\n\n" + "="*50
+                reply_text += "\nWhat would you like to do next?"
+                reply_text += "\n- Type 'restart' to start a new consultation"
+                reply_text += "\n- Type 'help' to see available commands"
+                reply_text += "\n- Type 'exit' to end the conversation"
+                
+                return {"reply_text": reply_text, "structured": {"doctors": docs}}
 
             elif user_text in ["no", "n"]:
-                return {"reply_text": self._choose([
+                reply = self._choose([
                     "Alright, please rest and take care. Let me know if you need more help.",
                     "Okay. Stay safe and get well soon.",
-                    "No problem. I’m here if you want advice later."
-                ])}
+                    "No problem. I'm here if you want advice later."
+                ])
+                
+                # Add options for what to do next
+                reply += "\n\n" + "="*50
+                reply += "\nWhat would you like to do next?"
+                reply += "\n- Type 'restart' to start a new consultation"
+                reply += "\n- Type 'help' to see available commands"
+                reply += "\n- Type 'exit' to end the conversation"
+                
+                return {"reply_text": reply}
 
             else:
                 return {"reply_text": "Please reply with 'yes' or 'no'."}
 
-        return {"reply_text": "I didn’t quite get that. Can you rephrase?"}
+        return {"reply_text": "I didn't quite get that. Can you rephrase? Type 'help' to see available commands."}
 
 def handle_user_interaction(user_input_text: str,
                             duration: Optional[str] = None,
